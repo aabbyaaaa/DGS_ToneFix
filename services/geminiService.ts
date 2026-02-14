@@ -1,8 +1,9 @@
 import { PolishRequest, PolishResponse, Tone } from "../types";
 
-// Using OpenRouter's model ID for Google's Flash model
-// Note: "gemini-3-flash" is not yet public on OpenRouter, using the latest 2.0 Flash which is the equivalent bleeding edge.
-export const MODEL_NAME = 'google/gemini-2.0-flash-001';
+// User requested Gemini 3 Flash Preview.
+// Using OpenRouter convention "google/" prefix.
+// If this specific ID is not yet active on OpenRouter, you may need to fallback to 'google/gemini-2.0-flash-001'
+export const MODEL_NAME = 'google/gemini-3-flash-preview';
 
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
