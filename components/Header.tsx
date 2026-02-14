@@ -1,5 +1,6 @@
 import React from 'react';
-import { Zap } from 'lucide-react';
+import { Zap, Cpu } from 'lucide-react';
+import { MODEL_NAME } from '../services/geminiService';
 
 const Header: React.FC = () => {
   return (
@@ -23,9 +24,17 @@ const Header: React.FC = () => {
             </p>
           </div>
         </div>
-        <div className="flex items-center text-sm text-[#898989]">
-          <Zap className="h-4 w-4 mr-1 text-[#F7EDA2] fill-[#F7EDA2] stroke-gray-400" />
-          <span className="hidden sm:inline">Powered by Gemini 3 Flash</span>
+        
+        {/* Right side info: Model & Contact */}
+        <div className="flex flex-col items-end space-y-1">
+            <div className="flex items-center text-[10px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
+              <Cpu className="w-3 h-3 mr-1 text-gray-400" />
+              <span>Model: {MODEL_NAME}</span>
+            </div>
+            <div className="flex items-center text-xs text-[#898989]">
+              <Zap className="h-3 w-3 mr-1 text-[#F7EDA2] fill-[#F7EDA2] stroke-gray-400" />
+              <span className="hidden sm:inline">如有問題請洽分機124 陳宛均Abby</span>
+            </div>
         </div>
       </div>
     </header>

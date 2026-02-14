@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
 import InputForm from './components/InputForm';
-import OutputDisplay from './components/OutputDisplay';
+import { VariantCard, EmptyState } from './components/OutputDisplay';
 import { polishText } from './services/geminiService';
-import { PolishRequest, PolishResponse } from './types';
+import { PolishRequest, PolishResponse, Tone } from './types';
 import { AlertCircle } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -27,6 +27,13 @@ const App: React.FC = () => {
     }
   };
 
+  // Helper to find variants
+  const getVariant = (tone: Tone) => response?.variants.find(v => v.tone === tone);
+
+  const standardVariant = getVariant(Tone.STANDARD);
+  const conciseVariant = getVariant(Tone.CONCISE);
+  const formalVariant = getVariant(Tone.FORMAL);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -41,16 +48,43 @@ const App: React.FC = () => {
           </div>
         )}
 
-        <div className="flex flex-col lg:flex-row gap-6 h-full lg:h-[calc(100vh-10rem)]">
-          {/* Left Column: Input */}
-          <div className="w-full lg:w-5/12 h-full">
+        {/* 
+          Grid Layout:
+          Desktop: 2 Columns. 
+          Row 1: Input (Left) | Standard (Right) - Equal Height
+          Row 2: Concise (Left) | Formal (Right)
+          Mobile: 1 Column stack.
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
+          
+          {/* Top Left: Input Form */}
+          <div className="h-full">
             <InputForm onSubmit={handlePolishSubmit} isLoading={isLoading} />
           </div>
 
-          {/* Right Column: Output */}
-          <div className="w-full lg:w-7/12 h-full">
-             <OutputDisplay variants={response?.variants || []} />
+          {/* Top Right: Standard Variant (or Empty State) */}
+          <div className="h-full">
+            {standardVariant ? (
+              <VariantCard variant={standardVariant} />
+            ) : (
+              <EmptyState />
+            )}
           </div>
+
+          {/* Bottom Row: Only visible when response is available */}
+          {response && (
+            <>
+              {/* Bottom Left: Concise */}
+              <div className="h-full">
+                {conciseVariant && <VariantCard variant={conciseVariant} />}
+              </div>
+
+              {/* Bottom Right: Formal */}
+              <div className="h-full">
+                {formalVariant && <VariantCard variant={formalVariant} />}
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>

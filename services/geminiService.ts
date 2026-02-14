@@ -1,6 +1,9 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { PolishRequest, PolishResponse, Tone } from "../types";
 
+// Export the model name so it can be displayed in the UI
+export const MODEL_NAME = 'gemini-3-flash-preview';
+
 // Initialize Gemini Client
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
@@ -24,7 +27,7 @@ const responseSchema: Schema = {
           },
           content: {
             type: Type.STRING,
-            description: "The complete polished response text including greeting and closing."
+            description: "The complete polished response text including greeting, body (with proper formatting), and closing."
           }
         },
         required: ["tone", "content"],
@@ -50,13 +53,16 @@ export const polishText = async (request: PolishRequest): Promise<PolishResponse
     CRITICAL RULES (Hard Constraints):
     1. **Term Integrity**: DO NOT change, translate, or remove any technical terms, model numbers (e.g., ABC-1234), values (e.g., 0.22 μm), units, or part numbers. Verify this strictly.
     2. **Language**: Output MUST be in Traditional Chinese (Taiwan).
-    3. **Tone Variance**: You must generate exactly 3 versions:
-       - **Concise (精簡)**: Direct, efficient, minimal pleasantries, suitable for quick updates.
-       - **Standard (標準)**: Balanced, friendly, standard business polite.
-       - **Formal (正式)**: Highly respectful, more honorifics, suitable for official notices or senior management.
-    4. **Structure**:
+    3. **Formatting & Layout Strategy (Crucial)**:
+       - **Smart Paragraphing**: Content MUST be broken into logical paragraphs using line breaks. Do not produce a single block of text ("wall of text").
+       - **Auto-Bulleting**: REGARDLESS of the tone (Concise, Standard, or Formal), if the content involves technical specifications, step-by-step instructions, multiple distinct issues, or a list of items, **YOU MUST use bullet points (•) or numbered lists (1., 2.)** to present them clearly.
+    4. **Tone Variance**: You must generate exactly 3 versions:
+       - **Concise (精簡)**: Direct, efficient. Heavily favor bullet points for quick reading.
+       - **Standard (標準)**: Balanced, friendly. Use natural paragraphs for explanations and bullet points for specs/steps.
+       - **Formal (正式)**: Highly respectful, professional. Structured paragraphs, but use lists for technical details to improve clarity (like a professional report).
+    5. **Structure**:
        - ${greetingInstruction}
-       - Include the technical content (polished flow, but preserved facts).
+       - Include the technical content (following the formatting rules above).
        - End with a polite closing (e.g., "如需補充資訊，歡迎告知").
   `;
 
@@ -71,7 +77,7 @@ export const polishText = async (request: PolishRequest): Promise<PolishResponse
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: MODEL_NAME,
       contents: userPrompt,
       config: {
         systemInstruction: systemInstruction,

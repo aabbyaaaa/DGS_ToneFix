@@ -2,16 +2,12 @@ import React, { useState } from 'react';
 import { PolishedVariant, Tone } from '../types';
 import { Copy, Check, MessageSquare } from 'lucide-react';
 
-interface OutputDisplayProps {
-  variants: PolishedVariant[];
-}
-
 // Brand Colors:
 // Concise (Green): #9DC447
 // Standard (Turquoise): #26B7BC
 // Formal (Purple): #8188BC
 
-const ToneBadge: React.FC<{ tone: Tone }> = ({ tone }) => {
+export const ToneBadge: React.FC<{ tone: Tone }> = ({ tone }) => {
   // Using specific brand colors for badges with light backgrounds
   const styles = {
     [Tone.CONCISE]: "bg-[#9DC447]/10 text-[#9DC447] border-[#9DC447]/20",
@@ -32,7 +28,7 @@ const ToneBadge: React.FC<{ tone: Tone }> = ({ tone }) => {
   );
 };
 
-const VariantCard: React.FC<{ variant: PolishedVariant }> = ({ variant }) => {
+export const VariantCard: React.FC<{ variant: PolishedVariant; className?: string }> = ({ variant, className = "" }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -53,7 +49,7 @@ const VariantCard: React.FC<{ variant: PolishedVariant }> = ({ variant }) => {
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-[6px] ${borderClass[variant.tone]} overflow-hidden hover:shadow-md transition-shadow duration-300 flex flex-col`}>
+    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 border-l-[6px] ${borderClass[variant.tone]} overflow-hidden hover:shadow-md transition-shadow duration-300 flex flex-col h-full ${className}`}>
       <div className="px-4 py-3 border-b border-gray-100 bg-white flex justify-between items-center">
         <ToneBadge tone={variant.tone} />
         <button
@@ -86,35 +82,14 @@ const VariantCard: React.FC<{ variant: PolishedVariant }> = ({ variant }) => {
   );
 };
 
-const OutputDisplay: React.FC<OutputDisplayProps> = ({ variants }) => {
-  if (!variants || variants.length === 0) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center text-[#898989] bg-[#26B7BC]/5 rounded-xl border border-dashed border-[#26B7BC]/30 p-8">
-        <div className="bg-white p-4 rounded-full mb-4 shadow-sm">
-          <MessageSquare className="w-8 h-8 text-[#26B7BC]/50" />
-        </div>
-        <p className="text-center font-medium text-[#005787]">尚未產生內容</p>
-        <p className="text-center text-sm mt-1">請在左側輸入內容並點擊「開始轉換」</p>
-      </div>
-    );
-  }
-
-  // Define sort order to ensure display consistency: Concise -> Standard -> Formal
-  const sortOrder = {
-    [Tone.CONCISE]: 1,
-    [Tone.STANDARD]: 2,
-    [Tone.FORMAL]: 3,
-  };
-
-  const sortedVariants = [...variants].sort((a, b) => sortOrder[a.tone] - sortOrder[b.tone]);
-
+export const EmptyState: React.FC = () => {
   return (
-    <div className="grid grid-cols-1 gap-4 h-full overflow-y-auto pb-4">
-      {sortedVariants.map((variant) => (
-        <VariantCard key={variant.tone} variant={variant} />
-      ))}
+    <div className="h-full flex flex-col items-center justify-center text-[#898989] bg-[#26B7BC]/5 rounded-xl border border-dashed border-[#26B7BC]/30 p-8 min-h-[300px]">
+      <div className="bg-white p-4 rounded-full mb-4 shadow-sm">
+        <MessageSquare className="w-8 h-8 text-[#26B7BC]/50" />
+      </div>
+      <p className="text-center font-medium text-[#005787]">尚未產生內容</p>
+      <p className="text-center text-sm mt-1">請在左側輸入內容並點擊「開始轉換」</p>
     </div>
   );
 };
-
-export default OutputDisplay;
